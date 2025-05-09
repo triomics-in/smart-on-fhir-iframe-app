@@ -1,0 +1,560 @@
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+h1 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.context-info {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.info-item {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.info-item h3 {
+  color: #666;
+  margin: 0 0 0.8rem 0;
+  font-size: 1.1rem;
+}
+
+.basic-info p {
+  margin: 0.5rem 0;
+  color: #333;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.basic-info strong {
+  color: #555;
+  margin-right: 0.5rem;
+}
+
+.context-history {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.context-source {
+  background-color: #2d2d2d;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.source-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #3d3d3d;
+}
+
+.method {
+  color: #61dafb;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.timestamp {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.source-info {
+  padding: 0.5rem 1rem;
+  background-color: #252525;
+  border-bottom: 1px solid #3d3d3d;
+  font-size: 0.85rem;
+}
+
+.source-label {
+  color: #888;
+  margin-right: 0.5rem;
+}
+
+.source-value {
+  color: #61dafb;
+  font-family: 'Fira Code', 'Consolas', monospace;
+}
+
+.context-source pre {
+  margin: 0;
+  padding: 1rem;
+  color: #e6e6e6;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+  background-color: #2d2d2d;
+}
+
+/* Additional Context Styles */
+.info-item:has(pre) {
+  background-color: #2d2d2d;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.info-item:has(pre) h3 {
+  color: #61dafb;
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+}
+
+.info-item pre {
+  margin: 0;
+  color: #e6e6e6;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+  background-color: #1e1e1e;
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid #3d3d3d;
+}
+
+/* OAuth Information Styles */
+.oauth-info {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+
+.oauth-info p {
+  margin: 0.5rem 0;
+  color: #333;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.auth-urls {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #dee2e6;
+}
+
+.url-section {
+  margin-bottom: 1rem;
+}
+
+.url-section h4 {
+  color: #2c3e50;
+  margin: 0 0 0.8rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.url-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.url-item {
+  background-color: white;
+  padding: 0.8rem;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+
+.url-item strong {
+  display: block;
+  color: #495057;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.url-item a {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  word-break: break-all;
+  display: block;
+  padding: 0.4rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+.url-item a:hover {
+  text-decoration: underline;
+  background-color: #e9ecef;
+}
+
+.auth-flow {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+
+.auth-flow p {
+  margin: 0.5rem 0;
+  color: #333;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.auth-details {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #2d2d2d;
+  border-radius: 4px;
+}
+
+.auth-details pre {
+  margin: 0;
+  color: #e6e6e6;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Status colors */
+.auth-flow p strong:contains('Status') {
+  color: #28a745;
+}
+
+.auth-flow p strong:contains('Error') {
+  color: #dc3545;
+}
+
+.auth-button {
+  display: block;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.auth-button:hover {
+  background-color: #218838;
+}
+
+.auth-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.auth-response {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.auth-response p {
+  margin: 0.5rem 0;
+  color: #333;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.auth-response strong {
+  color: #495057;
+}
+
+.auth-frame-container {
+  margin-top: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: white;
+}
+
+.auth-frame {
+  width: 100%;
+  height: 600px;
+  border: none;
+}
+
+.cookies-info {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  border: 1px solid #dee2e6;
+}
+
+.cookie-section {
+  margin-bottom: 2rem;
+  background-color: white;
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.cookie-section:last-child {
+  margin-bottom: 0;
+}
+
+.cookie-section h4 {
+  color: #2c3e50;
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.cookie-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cookie-item {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.2s ease;
+}
+
+.cookie-item:hover {
+  background-color: #e9ecef;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.cookie-item:last-child {
+  margin-bottom: 0;
+}
+
+.cookie-item pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: 0.9rem;
+  color: #2c3e50;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  line-height: 1.5;
+}
+
+.cookie-item .cookie-name {
+  color: #007bff;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.cookie-item .cookie-value {
+  color: #28a745;
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+.cookie-item .cookie-domain {
+  color: #6c757d;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+.no-cookies {
+  color: #6c757d;
+  font-style: italic;
+  padding: 1rem;
+  text-align: center;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px dashed #dee2e6;
+}
+
+.cookie-attribute {
+  margin: 0.3rem 0;
+  font-size: 0.85rem;
+  color: #495057;
+  display: flex;
+  align-items: baseline;
+}
+
+.cookie-attribute strong {
+  color: #2c3e50;
+  min-width: 80px;
+  margin-right: 0.5rem;
+}
+
+.cookie-value {
+  color: #28a745;
+  background-color: #f8f9fa;
+  padding: 0.75rem;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  margin: 0.5rem 0;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.cookie-name {
+  color: #007bff;
+  font-weight: 600;
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.cookie-domain {
+  background-color: #f8f9fa;
+  padding: 0.75rem;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  margin-top: 0.5rem;
+}
+
+.query-params {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+.query-params h5 {
+  color: #2c3e50;
+  margin: 0 0 0.8rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.params-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.param-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+
+.param-item strong {
+  color: #495057;
+  min-width: 80px;
+  font-size: 0.85rem;
+}
+
+.param-item span {
+  color: #28a745;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+.browser-frame {
+  margin-top: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.browser-header {
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.browser-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.browser-button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+}
+
+.browser-button.close {
+  background-color: #ff5f57;
+}
+
+.browser-button.minimize {
+  background-color: #febc2e;
+}
+
+.browser-button.maximize {
+  background-color: #28c840;
+}
+
+.browser-address-bar {
+  flex: 1;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.browser-address-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  color: #333;
+  background: transparent;
+}
+
+.browser-address-bar .url-icon {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.browser-content {
+  width: 100%;
+  height: 600px;
+  border: none;
+}

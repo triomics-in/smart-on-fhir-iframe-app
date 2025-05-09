@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Page - Iframe Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .controls {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .button-group {
+            margin-bottom: 1rem;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            margin-right: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .context-input {
+            margin-top: 1rem;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .method-group {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+        .method-group h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Parent Page</h1>
+        
+        <div class="controls">
+            <div class="button-group">
+                <button onclick="resizeIframe()">Resize Iframe</button>
+                <button onclick="reloadIframe()">Reload Iframe</button>
+            </div>
+        </div>
+
+        <div class="method-group">
+            <h3>Send Context via Different Methods</h3>
+            <div class="context-input">
+                <textarea id="contextData" placeholder="Enter context data as JSON">{
+    "message": "Hello from parent!",
+    "timestamp": "2024-03-19T12:00:00Z",
+    "data": {
+        "key1": "value1",
+        "key2": "value2"
+    }
+}</textarea>
+                <div class="button-group">
+                    <button onclick="sendViaPostMessage()">Send via postMessage</button>
+                    <button onclick="sendViaLocalStorage()">Send via Local Storage</button>
+                    <button onclick="sendViaSessionStorage()">Send via Session Storage</button>
+                    <button onclick="sendViaCustomEvent()">Send via Custom Event</button>
+                    <button onclick="sendViaUrlParams()">Send via URL Parameters</button>
+                    <button onclick="sendViaUrlHash()">Send via URL Hash</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="iframe-container">
+            <iframe 
+                id="myIframe" 
+                src="http://localhost:5175/?clientId=e44d31df-8033-4dc2-ab0e-6fefb16a4d01&iss=https://interopio.ontada.com/gateway/fhir/developerportalio/portal/gw-fhir&launch=7957cc65-0eef-4f28-8212-39ca8880714b&redirect_uri=https://58cc-157-20-14-23.ngrok-free.app/callback&state=98wrghuwuogerg97"
+                allow="clipboard-read; clipboard-write; fullscreen"
+                sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"
+                referrerPolicy="origin"
+            ></iframe>
+        </div>
+    </div>
+
+    <script>
+        let iframeLoaded = false;
+        const iframe = document.getElementById('myIframe');
+        const contextData = document.getElementById('contextData');
+
+        // Function to handle iframe load
+        function handleIframeLoad() {
+            // Add a small delay to ensure iframe is fully initialized
+            setTimeout(() => {
+                iframeLoaded = true;
+                console.log('Iframe loaded and ready for communication');
+                sendInitialContext();
+            }, 100);
+        }
+
+        // Function to send initial context via all methods
+        function sendInitialContext() {
+            if (!iframeLoaded) {
+                console.warn('Iframe not ready yet, retrying in 100ms');
+                setTimeout(sendInitialContext, 100);
+                return;
+            }
+
+            const initialContext = {
+                message: "Initial context from parent",
+                timestamp: new Date().toISOString(),
+                data: {
+                    key1: "initial value 1",
+                    key2: "initial value 2"
+                }
+            };
+
+            try {
+                // Send initial context via postMessage
+                iframe.contentWindow.postMessage({
+                    type: 'INITIAL_CONTEXT',
+                    data: initialContext
+                }, '*');
+
+                // Set storage values with validation
+                try {
+                    if (window.localStorage) {
+                        localStorage.setItem('iframeContext', JSON.stringify(initialContext));
+                        console.log('Initial context stored in localStorage');
+                    }
+                } catch (e) {
+                    console.warn('Could not store in localStorage:', e);
+                }
+
+                try {
+                    if (window.sessionStorage) {
+                        sessionStorage.setItem('iframeContext', JSON.stringify(initialContext));
+                        console.log('Initial context stored in sessionStorage');
+                    }
+                } catch (e) {
+                    console.warn('Could not store in sessionStorage:', e);
+                }
+
+                // Send custom event
+                iframe.contentWindow.postMessage({
+                    type: 'CUSTOM_EVENT',
+                    eventType: 'iframeContextUpdate',
+                    data: initialContext
+                }, '*');
+            } catch (error) {
+                console.error('Error sending initial context:', error);
+                setTimeout(sendInitialContext, 100);
+            }
+        }
+
+        // Function to resize iframe
+        function resizeIframe() {
+            if (!iframeLoaded) {
+                alert('Please wait for iframe to load');
+                return;
+            }
+            const newHeight = Math.floor(Math.random() * 400) + 400;
+            iframe.style.height = `${newHeight}px`;
+        }
+
+        // Function to reload iframe
+        function reloadIframe() {
+            iframeLoaded = false;
+            const currentSrc = iframe.src;
+            iframe.src = 'about:blank';
+            setTimeout(() => {
+                iframe.src = currentSrc;
+            }, 100);
+        }
+
+        // Function to send context via postMessage
+        function sendViaPostMessage() {
+            if (!iframeLoaded) {
+                alert('Please wait for iframe to load');
+                return;
+            }
+            try {
+                const data = JSON.parse(contextData.value);
+                iframe.contentWindow.postMessage({
+                    type: 'CONTEXT_UPDATE',
+                    data: data
+                }, '*');
+            } catch (e) {
+                alert('Invalid JSON data');
+            }
+        }
+
+        // Function to send context via Local Storage
+        function sendViaLocalStorage() {
+            if (!iframeLoaded) {
+                alert('Please wait for iframe to load');
+                return;
+            }
+            try {
+                const data = JSON.parse(contextData.value);
+                const storageKey = 'iframeContext';
+                const storageData = JSON.stringify(data);
+                
+                // Validate storage is available
+                if (!window.localStorage) {
+                    throw new Error('localStorage is not available');
+                }
+
+                // Store the data
+                localStorage.setItem(storageKey, storageData);
+                
+                // Verify the data was stored
+                const storedData = localStorage.getItem(storageKey);
+                if (!storedData) {
+                    throw new Error('Failed to store data in localStorage');
+                }
+
+                // Log success
+                console.log('Successfully stored in localStorage:', {
+                    key: storageKey,
+                    data: data
+                });
+
+                // Notify iframe about the storage update
+                iframe.contentWindow.postMessage({
+                    type: 'STORAGE_UPDATE',
+                    storage: 'localStorage',
+                    key: storageKey,
+                    data: data
+                }, '*');
+            } catch (e) {
+                console.error('Error with localStorage:', e);
+                alert('Error storing data in localStorage: ' + e.message);
+            }
+        }
+
+        // Function to send context via Session Storage
+        function sendViaSessionStorage() {
+            if (!iframeLoaded) {
+                alert('Please wait for iframe to load');
+                return;
+            }
+            try {
+                const data = JSON.parse(contextData.value);
+                const storageKey = 'iframeContext';
+                const storageData = JSON.stringify(data);
+                
+                // Validate storage is available
+                if (!window.sessionStorage) {
+                    throw new Error('sessionStorage is not available');
+                }
+
+                // Store the data
+                sessionStorage.setItem(storageKey, storageData);
+                
+                // Verify the data was stored
+                const storedData = sessionStorage.getItem(storageKey);
+                if (!storedData) {
+                    throw new Error('Failed to store data in sessionStorage');
+                }
+
+                // Log success
+                console.log('Successfully stored in sessionStorage:', {
+                    key: storageKey,
+                    data: data
+                });
+
+                // Notify iframe about the storage update
+                iframe.contentWindow.postMessage({
+                    type: 'STORAGE_UPDATE',
+                    storage: 'sessionStorage',
+                    key: storageKey,
+                    data: data
+                }, '*');
+            } catch (e) {
+                console.error('Error with sessionStorage:', e);
+                alert('Error storing data in sessionStorage: ' + e.message);
+            }
+        }
+
+        // Function to send context via Custom Event
+        function sendViaCustomEvent() {
+            if (!iframeLoaded) {
+                alert('Please wait for iframe to load');
+                return;
+            }
+            try {
+                const data = JSON.parse(contextData.value);
+                iframe.contentWindow.postMessage({
+                    type: 'CUSTOM_EVENT',
+                    eventType: 'iframeContextUpdate',
+                    data: data
+                }, '*');
+            } catch (e) {
+                alert('Invalid JSON data');
+            }
+        }
+
+        // Function to send context via URL Parameters
+        function sendViaUrlParams() {
+            if (!iframeLoaded) {
+                alert('Please wait for iframe to load');
+                return;
+            }
+            try {
+                const data = JSON.parse(contextData.value);
+                const encodedData = btoa(JSON.stringify(data));
+                const newUrl = new URL(iframe.src);
+                newUrl.searchParams.set('context', encodedData);
+                iframe.src = newUrl.toString();
+            } catch (e) {
+                alert('Invalid JSON data');
+            }
+        }
+
+        // Function to send context via URL Hash
+        function sendViaUrlHash() {
+            if (!iframeLoaded) {
+                alert('Please wait for iframe to load');
+                return;
+            }
+            try {
+                const data = JSON.parse(contextData.value);
+                const hashData = encodeURIComponent(JSON.stringify(data));
+                iframe.src = iframe.src.split('#')[0] + '#' + hashData;
+            } catch (e) {
+                alert('Invalid JSON data');
+            }
+        }
+
+        // Add iframe load event listener
+        iframe.addEventListener('load', handleIframeLoad);
+    </script>
+</body>
+</html> 
