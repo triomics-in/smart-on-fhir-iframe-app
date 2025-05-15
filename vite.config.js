@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { BASE_URL } from './src/config.ts'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,7 +12,7 @@ export default defineConfig({
       'localhost',
       '127.0.0.1',
       '.ngrok-free.app', // allows all ngrok-free.app subdomains
-      '1cd7-157-20-14-23.ngrok-free.app', // specific ngrok host
+      BASE_URL, // specific ngrok host
       'developerportalio.interopio.ontada.com' // Ontada developer portal
     ],
     cors: true

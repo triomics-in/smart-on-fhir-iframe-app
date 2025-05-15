@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parent Page - Iframe Test</title>
+    <script src="./src/config.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -111,7 +112,7 @@
         <div id="iframe-container">
             <iframe 
                 id="myIframe" 
-                src="http://localhost:5175/?clientId=e44d31df-8033-4dc2-ab0e-6fefb16a4d01&iss=https://interopio.ontada.com/gateway/fhir/developerportalio/portal/gw-fhir&launch=7957cc65-0eef-4f28-8212-39ca8880714b&redirect_uri=https://58cc-157-20-14-23.ngrok-free.app/callback&state=98wrghuwuogerg97"
+                src="http://localhost:5175/?clientId=e44d31df-8033-4dc2-ab0e-6fefb16a4d01&iss=https://interopio.ontada.com/gateway/fhir/developerportalio/portal/gw-fhir&launch=7957cc65-0eef-4f28-8212-39ca8880714b&redirect_uri=" + window.BASE_URL + "&state=98wrghuwuogerg97"
                 allow="clipboard-read; clipboard-write; fullscreen"
                 sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"
                 referrerPolicy="origin"

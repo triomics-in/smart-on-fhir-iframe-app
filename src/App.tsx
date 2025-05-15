@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import './App.css'
 import Callback from './Callback'
+import { BASE_URL, CALLBACK_URL } from './config.ts'
 
 interface ContextSource {
   method: string;
@@ -77,6 +78,24 @@ interface RequestError {
   type: 'CDS' | 'USER' | 'STORAGE';
   message: string;
   timestamp: string;
+}
+
+interface TokenResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  scope: string;
+  refresh_token?: string;
+  patient?: string;
+  encounter?: string;
+  need_patient_banner?: boolean;
+  smart_style_url?: string;
+}
+
+interface TokenExchangeProps {
+  code: string;
+  onTokenReceived: (response: TokenResponse) => void;
+  onError: (error: string) => void;
 }
 
 // Move function declarations before their usage
@@ -172,7 +191,7 @@ const constructAuthUrl = async (iss: string, launch?: string) => {
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: 'e44d31df-8033-4dc2-ab0e-6fefb16a4d01',
-      redirect_uri: 'https://58cc-157-20-14-23.ngrok-free.app/callback',
+      redirect_uri: CALLBACK_URL,
       scope: 'launch/patient',
       state: '98wrghuwuogerg97',
       aud: iss
@@ -193,7 +212,7 @@ const constructAuthUrl = async (iss: string, launch?: string) => {
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: 'e44d31df-8033-4dc2-ab0e-6fefb16a4d01',
-      redirect_uri: 'https://58cc-157-20-14-23.ngrok-free.app/callback',
+      redirect_uri: CALLBACK_URL,
       scope: 'launch/patient',
       state: '98wrghuwuogerg97',
       aud: iss
@@ -468,6 +487,275 @@ const AuthComponent: React.FC<{
   );
 };
 
+// Token Exchange Sub-Components
+const LoadingState: React.FC = () => (
+  <div className="loading-container">
+    <div className="loading-content">
+      <div className="loading-spinner"></div>
+      <div className="loading-text">Exchanging authorization code for token...</div>
+      <div className="loading-subtext">This may take a few moments</div>
+    </div>
+  </div>
+);
+
+const ErrorState: React.FC<{ error: string }> = ({ error }) => (
+  <div className="error-container">
+    <div className="error-content">
+      <div className="error-header">
+        <span className="error-icon">⚠️</span>
+        <span className="error-title">Token Exchange Failed</span>
+      </div>
+      <div className="error-details">
+        <div className="error-message">{error}</div>
+        <div className="error-help">
+          Please check your authorization code and try again.
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const SuccessState: React.FC<{ response: TokenResponse }> = ({ response }) => (
+  <div className="response-container">
+    <div className="response-content">
+      <div className="response-header">
+        <span className="success-icon">✓</span>
+        <span className="success-title">Token Exchange Successful</span>
+      </div>
+      <div className="raw-response">
+        <pre>{JSON.stringify(response, null, 2)}</pre>
+      </div>
+    </div>
+  </div>
+);
+
+// Token Exchange Styles
+const tokenExchangeStyles = `
+  .token-exchange {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 24px;
+    margin: 20px 0;
+    max-width: 800px;
+  }
+
+  .token-exchange h3 {
+    color: #1a1a1a;
+    font-size: 20px;
+    margin: 0 0 20px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+
+  /* Loading State Styles */
+  .loading-container {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 32px;
+  }
+
+  .loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #e6f7ff;
+    border-top: 4px solid #1890ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+  }
+
+  .loading-text {
+    color: #1890ff;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .loading-subtext {
+    color: #666;
+    font-size: 14px;
+  }
+
+  /* Error State Styles */
+  .error-container {
+    background: #fff2f0;
+    border: 1px solid #ffccc7;
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .error-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .error-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .error-icon {
+    font-size: 24px;
+  }
+
+  .error-title {
+    color: #f5222d;
+    font-weight: 600;
+    font-size: 18px;
+  }
+
+  .error-details {
+    background: white;
+    border-radius: 6px;
+    padding: 16px;
+  }
+
+  .error-message {
+    color: #333;
+    font-family: monospace;
+    padding: 12px;
+    background: #fafafa;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+
+  .error-help {
+    color: #666;
+    font-size: 14px;
+  }
+
+  /* Success State Styles */
+  .response-container {
+    background: #ffffff;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+  }
+
+  .response-content {
+    padding: 20px;
+  }
+
+  .response-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e8e8e8;
+  }
+
+  .success-icon {
+    color: #52c41a;
+    font-size: 24px;
+  }
+
+  .success-title {
+    color: #52c41a;
+    font-weight: 600;
+    font-size: 18px;
+  }
+
+  .raw-response {
+    background: #1a1a1a;
+    border-radius: 6px;
+    padding: 16px;
+    border: 1px solid #333;
+  }
+
+  .raw-response pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #ffffff;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
+// Token Exchange Service
+const tokenExchangeService = {
+  async exchangeToken(code: string): Promise<TokenResponse> {
+    const params = new URLSearchParams({
+      grant_type: 'authorization_code',
+      code: code,
+      redirect_uri: CALLBACK_URL,
+      client_id: 'e44d31df-8033-4dc2-ab0e-6fefb16a4d01'
+    });
+
+    const response = await fetch('https://interopio.ontada.com/av2/oauth2/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString()
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error_description || data.error || 'Failed to exchange token');
+    }
+
+    return data;
+  }
+};
+
+// Main Token Exchange Component
+const TokenExchange: React.FC<TokenExchangeProps> = ({ code, onTokenReceived, onError }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [response, setResponse] = useState<TokenResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const performTokenExchange = async () => {
+      if (!code) return;
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const tokenResponse = await tokenExchangeService.exchangeToken(code);
+        setResponse(tokenResponse);
+        onTokenReceived(tokenResponse);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+        setError(errorMessage);
+        onError(errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    performTokenExchange();
+  }, [code, onTokenReceived, onError]);
+
+  return (
+    <div className="token-exchange">
+      <h3>Token Exchange</h3>
+      {isLoading && <LoadingState />}
+      {error && <ErrorState error={error} />}
+      {response && <SuccessState response={response} />}
+      <style>{tokenExchangeStyles}</style>
+    </div>
+  );
+};
+
 function MainApp() {
   const [context, setContext] = useState<IframeContext | null>({
     referrer: document.referrer,
@@ -653,6 +941,16 @@ function MainApp() {
     });
   }, []);
 
+  const handleTokenReceived = useCallback((response: TokenResponse) => {
+    console.log('Token received:', response);
+    // You can add additional handling here
+  }, []);
+
+  const handleTokenError = useCallback((error: string) => {
+    console.error('Token exchange error:', error);
+    // You can add additional error handling here
+  }, []);
+
   return (
     <div className="app-container">
       <h1>Iframe Context Information</h1>
@@ -765,11 +1063,11 @@ function MainApp() {
                     </a>
                     <div className="callback-url">
                       <p><strong>Callback URL:</strong></p>
-                      <code>https://58cc-157-20-14-23.ngrok-free.app/callback</code>
+                      <code>{CALLBACK_URL}</code>
                     </div>
                     <div className="url-details">
-                      <p><strong>Base URL:</strong> https://58cc-157-20-14-23.ngrok-free.app</p>
-                      <p><strong>Full Callback Path:</strong> https://58cc-157-20-14-23.ngrok-free.app/callback</p>
+                      <p><strong>Base URL:</strong> {BASE_URL}</p>
+                      <p><strong>Full Callback Path:</strong> {CALLBACK_URL}</p>
                     </div>
                   </div>
                 )}
@@ -1228,6 +1526,13 @@ function MainApp() {
                   </div>
                 )}
               </div>
+              {callbackData.params.code && (
+                <TokenExchange
+                  code={callbackData.params.code}
+                  onTokenReceived={handleTokenReceived}
+                  onError={handleTokenError}
+                />
+              )}
             </div>
           )}
 
