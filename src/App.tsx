@@ -192,7 +192,7 @@ const constructAuthUrl = async (iss: string, launch?: string) => {
       response_type: 'code',
       client_id: 'e44d31df-8033-4dc2-ab0e-6fefb16a4d01',
       redirect_uri: CALLBACK_URL,
-      scope: 'launch/patient',
+      scope: 'launch/patient offline_access',
       state: '98wrghuwuogerg97',
       aud: iss
     });
@@ -213,7 +213,7 @@ const constructAuthUrl = async (iss: string, launch?: string) => {
       response_type: 'code',
       client_id: 'e44d31df-8033-4dc2-ab0e-6fefb16a4d01',
       redirect_uri: CALLBACK_URL,
-      scope: 'launch/patient',
+      scope: 'launch/patient offline_access',
       state: '98wrghuwuogerg97',
       aud: iss
     });
