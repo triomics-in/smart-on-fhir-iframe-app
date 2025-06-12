@@ -192,7 +192,7 @@ const constructAuthUrl = async (iss: string, launch?: string) => {
       response_type: 'code',
       client_id: 'e44d31df-8033-4dc2-ab0e-6fefb16a4d01',
       redirect_uri: CALLBACK_URL,
-      scope: 'launch/patient offline_access',
+      scope: 'launch/patient offline_access fhirUser',
       state: '98wrghuwuogerg97',
       aud: iss
     });
@@ -213,7 +213,7 @@ const constructAuthUrl = async (iss: string, launch?: string) => {
       response_type: 'code',
       client_id: 'e44d31df-8033-4dc2-ab0e-6fefb16a4d01',
       redirect_uri: CALLBACK_URL,
-      scope: 'launch/patient offline_access',
+      scope: 'launch/patient offline_access fhirUser',
       state: '98wrghuwuogerg97',
       aud: iss
     });
@@ -839,6 +839,7 @@ function MainApp() {
 
       // Add initial URL parameters to context history
       const params = new URLSearchParams(window.location.search);
+      params.forEach((value, key) => {console.log('param : ', value, key)})
       if (params.toString()) {
         const urlContext: Record<string, any> = {};
         params.forEach((value, key) => {
